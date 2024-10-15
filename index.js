@@ -74,6 +74,7 @@ app.use(errorHandler);
 
 app.get('/', (req, res) => {
   console.log('API is working');
+  console.log('running on port 6000');
   res.send('Welcome to my API!');
 });
 
