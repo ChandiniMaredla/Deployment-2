@@ -38,7 +38,7 @@ const app = express();
 // }));
 
 const corsOptions = {
-  origin: 'https://realestatedeploy-2.web.app/', // Adjust this to match your frontend's origin
+  origin: 'https://realestatedeploy-3.web.app/', // Adjust this to match your frontend's origin
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
