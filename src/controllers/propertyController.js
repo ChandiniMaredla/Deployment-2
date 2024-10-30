@@ -329,6 +329,7 @@ const getPropertiesByType = async (req, res) => {
 };
 
 //insertPropertyRatings
+<<<<<<< HEAD
 const insertPropertyRatings = async (req, res) => {
   try {
     const userId = req.user.user.userId;
@@ -422,6 +423,232 @@ const insertPropertyRatings = async (req, res) => {
     });
   }
 };
+=======
+// const insertPropertyRatings = async (req, res) => {
+//   try {
+//     const userId = req.user.user.userId;
+//     const status = 1;
+//     if (!userId) {
+//       return res
+//         .status(400)
+//         .json({ message: "User ID is missing in request", success: false });
+//     }
+
+//     const { propertyId, propertyType, rating } = req.body;
+
+//     // Insert the new rating into the propertyRating collection
+//     const ratingsData = {
+//       userId,
+//       status,
+//       propertyId,
+//       propertyType,
+//       rating,
+//     };
+//     const result = await propertyRatingSchema.validateAsync(ratingsData);
+//     console.log("result", result);
+//     const newRating = new propertyRatingModel(result);
+//     await newRating.save();
+
+//     // Fetch all ratings for this propertyId to calculate the average rating
+//     const ratings = await propertyRatingModel.find({
+//       propertyId: result.propertyId,
+//     });
+//     const totalRatings = ratings.length;
+//     const sumRatings = ratings.reduce((acc, curr) => acc + curr.rating, 0);
+//     const avgRating = (sumRatings / totalRatings).toFixed(2); // Calculate the average rating
+
+//     // Determine which property type schema to update based on the propertyType field
+//     let propertyModel;
+//     if (result.propertyType === "Agricultural land") {
+//       propertyModel = fieldModel;
+//     } else if (result.propertyType === "Commercial") {
+//       propertyModel = commercialModel;
+//     } else if (result.propertyType === "Residential") {
+//       propertyModel = residentialModel;
+//     } else if (result.propertyType === "Layout") {
+//       propertyModel = layoutModel;
+//     } else {
+//       return res
+//         .status(400)
+//         .json({ message: "Invalid property type", success: false });
+//     }
+
+//     // Update the property rating in the corresponding schema
+//     if (propertyModel) {
+//       const updatedProperty = await propertyModel.findOneAndUpdate(
+//         { _id: result.propertyId }, // Ensure propertyId is the _id
+//         { rating: avgRating, ratingCount: totalRatings }, // Update the rating with the new average
+//         { new: true } // Return the updated document
+//       );
+//       if (!updatedProperty) {
+//         return res.status(404).json({
+//           message: `Property not found in ${result.propertyType} schema`,
+//           success: false,
+//         });
+//       }
+//     }
+
+//     res.status(201).json({
+//       message: "Rating details added successfully, and average rating updated",
+//       success: true,
+//       avgRating,
+//     });
+//   } catch (error) {
+//     if (error.isJoi) {
+//       console.log(error);
+//       return res.status(422).json({
+//         status: "error",
+//         message: error.details.map((detail) => detail.message).join(", "),
+//       });
+//     }
+//     console.error(
+//       "Error inserting rating details or updating the property rating:",
+//       error
+//     ); // Log the error
+//     res.status(500).json({
+//       message: "Error inserting rating details or updating the property rating",
+//       error,
+//     });
+//   }
+// };
+
+//insertPropertyRatings
+const insertPropertyRatings = async (req, res) => {
+  let five = 0, four = 0, three = 0, two = 0, one = 0;
+    try {
+      const userId = req.user.user.userId;
+      // const firstName = req.user.user.firstName;
+      // const lastName = req.user.user.lastName;
+      // const role = req.user.user.role;
+      const status = 1;
+      if (!userId) {
+        return res
+          .status(400)
+          .json({ message: "User ID is missing in request", success: false });
+      }
+  
+      const { propertyId, propertyType, rating } = req.body;
+  
+      // Insert the new rating into the propertyRating collection
+      const ratingsData = {
+        userId,
+        // firstName,
+        // lastName,
+        // role,
+        status,
+        propertyId,
+        propertyType,
+        rating,
+      };
+      const result = await propertyRatingSchema.validateAsync(ratingsData);
+      console.log("result", result);
+      const newRating = new propertyRatingModel(result);
+      await newRating.save();
+  
+      // Fetch all ratings for this propertyId to calculate the average rating
+      const ratings = await propertyRatingModel.find({
+        propertyId: result.propertyId,
+      }).sort({ userId: 1, createdAt: -1 });
+      const totalRatings = ratings.length;
+      const sumRatings = ratings.reduce((acc, curr) => acc + curr.rating, 0);
+      const avgRating = (sumRatings / totalRatings).toFixed(2); // Calculate the average rating
+  
+  
+  
+  
+  
+    // Filter to get only the latest rating per user
+        const latestRatings = [];
+        const seenUsers = new Set();
+  
+        for (const rating of ratings) {
+            if (!seenUsers.has(rating.userId)) {
+                latestRatings.push(rating);
+                seenUsers.add(rating.userId);
+            }
+        }
+  
+        // Count ratings
+        latestRatings.forEach((rating) => {
+            if (rating.rating >= 4.5) {
+                five++;
+            } else if (rating.rating >= 3.5 && rating.rating < 4.5) {
+                four++;
+            } else if (rating.rating >= 2.5 && rating.rating < 3.5) {
+                three++;
+            } else if (rating.rating >= 1.5 && rating.rating < 2.5) {
+                two++;
+            } else if (rating.rating >= 0.5 && rating.rating < 1.5) {
+                one++;
+            } 
+        });
+  
+        const countOfRatings = {
+            fiveStar: five,
+            fourStar: four,
+            threeStar: three,
+            twoStar: two,
+            oneStar: one
+        };
+
+  
+      // Determine which property type schema to update based on the propertyType field
+      let propertyModel;
+      if (result.propertyType === "Agricultural land") {
+        propertyModel = fieldModel;
+      } else if (result.propertyType === "Commercial") {
+        propertyModel = commercialModel;
+      } else if (result.propertyType === "Residential") {
+        propertyModel = residentialModel;
+      } else if (result.propertyType === "Layout") {
+        propertyModel = layoutModel;
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Invalid property type", success: false });
+      }
+  
+      // Update the property rating in the corresponding schema
+      if (propertyModel) {
+        const updatedProperty = await propertyModel.findOneAndUpdate(
+          { _id: result.propertyId }, // Ensure propertyId is the _id
+          { rating: avgRating, ratingCount: totalRatings, countOfRatings: countOfRatings }, // Update the rating with the new average
+          { new: true } // Return the updated document
+        );
+        if (!updatedProperty) {
+          return res.status(404).json({
+            message: `Property not found in ${result.propertyType} schema`,
+            success: false,
+          });
+        }
+        console.log(updatedProperty);
+      }
+
+      res.status(201).json({
+        message: "Rating details added successfully, and average rating updated",
+        success: true,
+        avgRating,
+        countOfRatings
+      });
+    } catch (error) {
+      if (error.isJoi) {
+        console.log(error);
+        return res.status(422).json({
+          status: "error",
+          message: error.details.map((detail) => detail.message).join(", "),
+        });
+      }
+      console.error(
+        "Error inserting rating details or updating the property rating:",
+        error
+      ); // Log the error
+      res.status(500).json({
+        message: "Error inserting rating details or updating the property rating",
+        error,
+      });
+    }
+  };
+>>>>>>> 3bb26f1 (new commit)
 
 //get property ratings
 //api for displaying ratings of a property, propertyId is sent through path params
@@ -1415,7 +1642,10 @@ soldResponse = soldResult;
 
 // max Price among all props
 const maxPriceForAllProps = async (req, res) => {
+<<<<<<< HEAD
   console.log(req.params);
+=======
+>>>>>>> 3bb26f1 (new commit)
   const { type, sell, rent, lease, flat, house } = req.params;
   try {
     let result = 0,
@@ -1438,7 +1668,10 @@ const maxPriceForAllProps = async (req, res) => {
         let price = 0;
         const propType = property.propertyDetails.type;
         price = property.propertyDetails.totalCost;
+<<<<<<< HEAD
         console.log(propType, " ", price);
+=======
+>>>>>>> 3bb26f1 (new commit)
         if (!price) {
           price = 0;
         }
@@ -1515,7 +1748,11 @@ const maxPriceForAllProps = async (req, res) => {
       return res.status(400).json("Invalid");
     }
 
+<<<<<<< HEAD
     console.log(response);
+=======
+   
+>>>>>>> 3bb26f1 (new commit)
     return res.status(200).json({ maxPrice: response });
   } catch (error) {
     return res.status(500).json("Internal server error");
@@ -1697,7 +1934,11 @@ soldResponse = soldResult;
     } else {
       return res.status(400).json("Invalid");
     }
+<<<<<<< HEAD
     console.log(response);
+=======
+
+>>>>>>> 3bb26f1 (new commit)
     if(unsold === "unsold" && sold === "@"){
      return res.status(200).json({ maxSize: unsoldResponse });
     }
@@ -1718,6 +1959,68 @@ soldResponse = soldResult;
 };
 
 
+<<<<<<< HEAD
+=======
+//count of ratings 
+const getCountOfRatings = async (req, res) => {
+  const { propertyId, propertyType } = req.params;
+  let five = 0, four = 0, three = 0, two = 0, one = 0, zero = 0;
+
+  try {
+      const ratings = await propertyRatingModel.find({ propertyId, propertyType })
+          .sort({ userId: 1, createdAt: -1 });  // Sort by userId and createdAt to get latest rating per user
+
+      if (ratings.length === 0) {
+          return res.status(404).json("NO RATING FOUND FOR THIS PROPERTY");
+      }
+
+      // Filter to get only the latest rating per user
+      const latestRatings = [];
+      const seenUsers = new Set();
+
+      for (const rating of ratings) {
+          if (!seenUsers.has(rating.userId)) {
+              latestRatings.push(rating);
+              seenUsers.add(rating.userId);
+          }
+      }
+
+      // Count ratings
+      latestRatings.forEach((rating) => {
+          if (rating.rating >= 4.5) {
+              five++;
+          } else if (rating.rating >= 3.5 && rating.rating < 4.5) {
+              four++;
+          } else if (rating.rating >= 2.5 && rating.rating < 3.5) {
+              three++;
+          } else if (rating.rating >= 1.5 && rating.rating < 2.5) {
+              two++;
+          } else if (rating.rating >= 0.5 && rating.rating < 1.5) {
+              one++;
+          } else {
+              zero++;
+          }
+      });
+
+      const result = {
+          fiveStar: five,
+          fourStar: four,
+          threeStar: three,
+          twoStar: two,
+          oneStar: one,
+          zeroStar: zero
+      };
+
+      return res.status(200).json(result);
+  } catch (error) {
+      return res.status(500).json("Internal server error");
+  }
+};
+
+
+
+
+>>>>>>> 3bb26f1 (new commit)
 module.exports = {
   getPropertiesByLocation, //unused
   getPropertiesByUserId, //only fields(unused)
@@ -1734,5 +2037,10 @@ module.exports = {
   getPropsByLocation, // location filter,
   maximumSize,
   maximumSizeForAllProps,
+<<<<<<< HEAD
   maxPriceForAllProps
+=======
+  maxPriceForAllProps,
+  getCountOfRatings
+>>>>>>> 3bb26f1 (new commit)
 };

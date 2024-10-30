@@ -14,7 +14,12 @@ const {
   getPropsByLocation,
   maximumSize,
   maximumSizeForAllProps,
+<<<<<<< HEAD
   maxPriceForAllProps
+=======
+  maxPriceForAllProps,
+  getCountOfRatings
+>>>>>>> 3bb26f1 (new commit)
 } = require("../controllers/propertyController");
 
 const propertyRoutes = express.Router();
@@ -36,4 +41,8 @@ propertyRoutes.get('/location/:type/:district/:mandal/:village',getPropsByLocati
 propertyRoutes.get('/maxSizeForAllProps/:type/:sell/:rent/:lease/:flat/:house/:sold/:unsold',cache('5 seconds'),maximumSizeForAllProps);
 propertyRoutes.get('/maxSize/:type/:sell/:rent/:lease/:flat/:house/:sold/:unsold',cache('5 seconds'),maximumSize);
 propertyRoutes.get('/maxPriceForAllProps/:type/:sell/:rent/:lease/:flat/:house',cache('5 seconds'),maxPriceForAllProps);
+<<<<<<< HEAD
+=======
+propertyRoutes.get('/countOfRatings/:propertyId/:propertyType',getCountOfRatings);
+>>>>>>> 3bb26f1 (new commit)
 module.exports = propertyRoutes;

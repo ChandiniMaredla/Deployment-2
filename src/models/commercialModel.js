@@ -23,6 +23,12 @@ const commercialSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+<<<<<<< HEAD
+=======
+    countOfRatings: {
+      type: Object
+          },
+>>>>>>> 3bb26f1 (new commit)
     status: {
       type: Number,
       default: 0,
